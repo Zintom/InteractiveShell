@@ -25,9 +25,9 @@ namespace ZintomShellHelper
 
             while (true)
             {
-                while (!Console.KeyAvailable)
-                {
-                }
+                //while (!Console.KeyAvailable)
+                //{
+                //}
 
                 ConsoleKeyInfo keyInfo = Console.ReadKey(true);
 
