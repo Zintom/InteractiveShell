@@ -187,6 +187,8 @@ namespace ZintomShellHelper
             Console.WriteLine("\n" + sub_title);
             Console.ForegroundColor = ConsoleColor.Gray;
             Console.WriteLine(content);
+
+            Reset();
         }
 
         public static void DrawTitle(string title, string sub_title, bool clear = false)
@@ -205,7 +207,7 @@ namespace ZintomShellHelper
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("\n" + sub_title);
 
-            Console.ForegroundColor = ConsoleColor.Gray;
+            Reset();
         }
 
         public static void DrawTitle(string title, bool clear = false)
@@ -222,7 +224,7 @@ namespace ZintomShellHelper
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("".PadRight(title.Length + 2, '='));
 
-            Console.ForegroundColor = ConsoleColor.Gray;
+            Reset();
         }
 
         /// <summary>

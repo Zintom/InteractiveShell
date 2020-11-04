@@ -12,6 +12,7 @@ namespace DemoProject
         static void Main(string[] args)
         {
             MenuManager.Init();
+            MenuManager.DrawTitle("Title", "Subtitle", "Content", true);
             int menuResult = MenuManager.CreateMenu(new string[] { "Option 1", "Option 2", "Option 3", "Option 4", "Option 5" }, false, 2);
 
         }
