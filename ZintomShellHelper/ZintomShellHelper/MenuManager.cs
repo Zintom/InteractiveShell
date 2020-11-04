@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,8 +10,27 @@ namespace ZintomShellHelper
 {
     public static class MenuManager
     {
+        private const string ERROR_CALL_INIT = "Please make at least one call to Init() before calling any other methods.";
 
         public static int ESCAPE_KEY = -1;
+
+        private static ConsoleColor DefaultBackColor;
+        private static ConsoleColor DefaultForeColor;
+        private static bool _initialized;
+
+        public static void Init()
+        {
+            DefaultBackColor = Console.BackgroundColor;
+            DefaultForeColor = Console.ForegroundColor;
+
+            _initialized = true;
+        }
+
+        /// <inheritdoc cref="CreateMenu(string[], bool, int)"/>
+        public static int CreateMenu(string option, bool horizontal = false, int positionOffset = 0)
+        {
+            return CreateMenu(new string[] { option }, horizontal, positionOffset);
+        }
 
         /// <summary>
         /// Creates an option menu in text form. Returns the selected option.
@@ -18,6 +38,8 @@ namespace ZintomShellHelper
         /// <returns>Selected item. If 'Escape' pressed will return -1.</returns>
         public static int CreateMenu(string[] options, bool horizontal = false, int positionOffset = 0)
         {
+            if (!_initialized) throw new InvalidOperationException(ERROR_CALL_INIT);
+
             bool DrawnOnce = false;
             int selectedOption = 0;
 
@@ -59,7 +81,7 @@ namespace ZintomShellHelper
                 }
 
                 DrawMenu(options, selectedOption, horizontal, ref DrawnOnce, positionOffset);
-                Thread.Sleep(16);
+                //Thread.Sleep(16);
             }
         }
 
@@ -69,10 +91,12 @@ namespace ZintomShellHelper
         /// <param name="positionOffset">Horizontal Offset of Text.</param>
         public static void CreateBackMenu(int positionOffset = 0)
         {
+            if (!_initialized) throw new InvalidOperationException(ERROR_CALL_INIT);
+
             CreateMenu(new string[] { "Back" }, false, positionOffset);
         }
 
-        public static void DrawMenu(string[] options, int selected, bool horizontal, ref bool DrawnOnce, int positionOffset)
+        private static void DrawMenu(string[] options, int selected, bool horizontal, ref bool DrawnOnce, int positionOffset)
         {
             if (DrawnOnce && !horizontal)
                 Console.CursorTop -= options.Length;
@@ -131,8 +155,7 @@ namespace ZintomShellHelper
                 }
             }
 
-            Console.TreatControlCAsInput = true;
-            Console.CursorVisible = false;
+            Reset();
 
             DrawnOnce = true;
         }
@@ -149,6 +172,8 @@ namespace ZintomShellHelper
 
         public static void DrawTitle(string title, string sub_title, string content, bool clear = false)
         {
+            if (!_initialized) throw new InvalidOperationException(ERROR_CALL_INIT);
+
             if (clear)
                 Console.Clear();
 
@@ -166,6 +191,8 @@ namespace ZintomShellHelper
 
         public static void DrawTitle(string title, string sub_title, bool clear = false)
         {
+            if (!_initialized) throw new InvalidOperationException(ERROR_CALL_INIT);
+
             if (clear)
                 Console.Clear();
 
@@ -183,6 +210,8 @@ namespace ZintomShellHelper
 
         public static void DrawTitle(string title, bool clear = false)
         {
+            if (!_initialized) throw new InvalidOperationException(ERROR_CALL_INIT);
+
             if (clear)
                 Console.Clear();
 
@@ -203,6 +232,9 @@ namespace ZintomShellHelper
         {
             Console.TreatControlCAsInput = false;
             Console.CursorVisible = true;
+
+            Console.BackgroundColor = DefaultBackColor;
+            Console.ForegroundColor = DefaultForeColor;
         }
 
     }
