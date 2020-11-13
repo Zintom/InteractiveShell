@@ -1,10 +1,13 @@
-# ShellHelper
+## ShellHelper
 Provides an easy mechanism for displaying interactive menus in the CLI.
+
+[![NuGet](https://img.shields.io/nuget/v/InteractiveShell?color=%2327ae60)](https://www.nuget.org/packages/InteractiveShell/2.0.1)
+[![License](https://img.shields.io/github/license/Zintom/InteractiveShell)](https://github.com/Zintom/InteractiveShell/blob/master/LICENSE.txt)
 
 ### Installation
 Nuget `PM> Install-Package InteractiveShell`
 
-## Example
+### Example
 Here's how to setup a basic menu (see [DemoProject](https://github.com/Zintom/ShellHelper/tree/master/ShellHelper/DemoProject) for more)
 ```
 // Create a new instance of the ShellMenu class.
