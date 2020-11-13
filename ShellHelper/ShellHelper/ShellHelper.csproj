@@ -7,7 +7,7 @@
     <Version>2.0.0</Version>
     <Authors>Tom Zsinko</Authors>
     <Company>Zintom</Company>
-    <Description>Provides an easy mechanism for display interactive menus in the CLI.</Description>
+    <Description>Provides an easy mechanism for displaying interactive menus in the CLI.</Description>
     <RepositoryUrl>https://github.com/Zintom/ShellHelper</RepositoryUrl>
     <PackageTags>CLI interactive-menu cmd interactive-console</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
