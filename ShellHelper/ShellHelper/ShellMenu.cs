@@ -1,68 +1,89 @@
 ﻿using System;
-using System.CodeDom;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace Zintom.ShellHelper
 {
-    public static class ShellMenu
+    public class BaseDisplayOptions
     {
-        private const string ERROR_CALL_INIT = "Please make at least one call to Init() before calling any other methods.";
+        /// <summary>
+        /// The whitespace padding to add to the left of drawn text.
+        /// </summary>
+        public int LeftOffset { get; set; }
+    }
 
-        public static int ESCAPE_KEY = -1;
+    public class ShellDisplayOptions : BaseDisplayOptions
+    {
+        /// <summary>
+        /// Menu should display horizontally rather than the default which is vertical.
+        /// </summary>
+        public bool DisplayHorizontally { get; set; }
+    }
 
-        private static ConsoleColor DefaultBackColor;
-        private static ConsoleColor DefaultForeColor;
-        private static bool _initialized;
+    public class ShellTitleDisplayOptions : BaseDisplayOptions
+    {
+        /// <summary>
+        /// The newline padding applied underneath the text.
+        /// </summary>
+        public int TitleVerticalPadding { get; set; } = 1;
 
-        public static void Init()
+        /// <inheritdoc cref="TitleVerticalPadding"/>
+        public int SubtitleVerticalPadding { get; set; } = 1;
+
+        /// <inheritdoc cref="TitleVerticalPadding"/>
+        public int ContentVerticalPadding { get; set; } = 1;
+    }
+
+    public class ShellMenu
+    {
+
+        private readonly ConsoleColor DefaultBackColor;
+        private readonly ConsoleColor DefaultForeColor;
+
+        private bool _menuDrawnOnce;
+
+        public ShellMenu()
         {
             DefaultBackColor = Console.BackgroundColor;
             DefaultForeColor = Console.ForegroundColor;
-
-            _initialized = true;
         }
 
-        /// <inheritdoc cref="CreateMenu(string[], bool, int)"/>
-        public static int CreateMenu(string option, bool horizontal = false, int positionOffset = 0)
+        /// <inheritdoc cref="DisplayMenu(string[], ShellDisplayOptions)"/>
+        public int DisplayMenu(string option, ShellDisplayOptions displayOptions)
         {
-            return CreateMenu(new string[] { option }, horizontal, positionOffset);
+            return DisplayMenu(new string[] { option }, displayOptions);
         }
 
         /// <summary>
-        /// Creates an option menu in text form. Returns the selected option.
+        /// Displays a menu to the user with the given choice of <paramref name="options"/> and
+        /// themed as per the <paramref name="displayOptions"/>.
         /// </summary>
-        /// <returns>Selected item. If 'Escape' pressed will return -1.</returns>
-        public static int CreateMenu(string[] options, bool horizontal = false, int positionOffset = 0)
+        /// <param name="options">A list of options that the user can select from.</param>
+        /// <param name="displayOptions">The theming options for the menu.</param>
+        /// <remarks>
+        /// <b>Warning:</b> This will take over control of the console keyboard, to return control to the user (allowing them to input text etc), call <see cref="Reset"/>.
+        /// </remarks>
+        /// <returns>The selected item, or if <b>Esc</b> was pressed, will return <see langword="-1"/>.</returns>
+        public int DisplayMenu(string[] options, ShellDisplayOptions displayOptions)
         {
-            if (!_initialized) throw new InvalidOperationException(ERROR_CALL_INIT);
-
-            bool DrawnOnce = false;
+            _menuDrawnOnce = false;
+            Console.CursorVisible = false;
             int selectedOption = 0;
-
-            DrawMenu(options, selectedOption, horizontal, ref DrawnOnce, positionOffset);
 
             while (true)
             {
-                //while (!Console.KeyAvailable)
-                //{
-                //}
+                DrawMenu(options, selectedOption, displayOptions);
 
                 ConsoleKeyInfo keyInfo = Console.ReadKey(true);
 
                 if (keyInfo.Key == ConsoleKey.Enter)
                 {
-                    Console.BackgroundColor = ConsoleColor.Black;
-                    Console.ForegroundColor = ConsoleColor.White;
+                    Reset();
                     return selectedOption;
                 }
                 else if (keyInfo.Key == ConsoleKey.Escape)
                 {
-                    Console.BackgroundColor = ConsoleColor.Black;
-                    Console.ForegroundColor = ConsoleColor.White;
+                    Reset();
                     return -1;
                 }
                 else if (keyInfo.Key == ConsoleKey.UpArrow || keyInfo.Key == ConsoleKey.LeftArrow)
@@ -79,34 +100,23 @@ namespace Zintom.ShellHelper
                     else
                         selectedOption = 0;
                 }
-
-                DrawMenu(options, selectedOption, horizontal, ref DrawnOnce, positionOffset);
-                //Thread.Sleep(16);
             }
         }
 
-        /// <summary>
-        /// Helper method to create a back menu.
-        /// </summary>
-        /// <param name="positionOffset">Horizontal Offset of Text.</param>
-        public static void CreateBackMenu(int positionOffset = 0)
+        private void DrawMenu(string[] options, int selected, ShellDisplayOptions displayOptions)
         {
-            if (!_initialized) throw new InvalidOperationException(ERROR_CALL_INIT);
-
-            CreateMenu(new string[] { "Back" }, false, positionOffset);
-        }
-
-        private static void DrawMenu(string[] options, int selected, bool horizontal, ref bool DrawnOnce, int positionOffset)
-        {
-            if (DrawnOnce && !horizontal)
+            if (_menuDrawnOnce && !displayOptions.DisplayHorizontally)
                 Console.CursorTop -= options.Length;
-            else if (DrawnOnce && horizontal)
+            else if (_menuDrawnOnce && displayOptions.DisplayHorizontally)
                 Console.CursorTop -= 1;
 
-            if (horizontal)
+            if (displayOptions.DisplayHorizontally)
             {
-                if (positionOffset > 0)
-                    drawOffset(positionOffset);
+                if (displayOptions.LeftOffset > 0)
+                {
+                    ResetColours();
+                    DrawLeftOffset(displayOptions.LeftOffset);
+                }
 
                 for (int o = 0; o < options.Length; o++)
                 {
@@ -118,14 +128,14 @@ namespace Zintom.ShellHelper
                     {
                         Console.BackgroundColor = ConsoleColor.Gray;
                         Console.ForegroundColor = ConsoleColor.Black;
-                        Console.Write(options[o]);
                     }
                     else
                     {
                         Console.BackgroundColor = ConsoleColor.Black;
                         Console.ForegroundColor = ConsoleColor.White;
-                        Console.Write(options[o]);
                     }
+
+                    Console.Write(options[o]);
 
                     Console.BackgroundColor = ConsoleColor.Black;
                     Console.ForegroundColor = ConsoleColor.DarkGray;
@@ -137,104 +147,118 @@ namespace Zintom.ShellHelper
             {
                 for (int o = 0; o < options.Length; o++)
                 {
-                    if (positionOffset > 0)
-                        drawOffset(positionOffset);
+                    if (displayOptions.LeftOffset > 0)
+                    {
+                        ResetColours();
+                        DrawLeftOffset(displayOptions.LeftOffset);
+                    }
 
                     if (o == selected)
                     {
                         Console.BackgroundColor = ConsoleColor.Gray;
                         Console.ForegroundColor = ConsoleColor.Black;
-                        Console.WriteLine(options[o]);
                     }
                     else
                     {
                         Console.BackgroundColor = ConsoleColor.Black;
                         Console.ForegroundColor = ConsoleColor.White;
-                        Console.WriteLine(options[o]);
                     }
+
+                    Console.WriteLine(options[o]);
                 }
             }
 
-            Reset();
+            ResetColours();
 
-            DrawnOnce = true;
+            _menuDrawnOnce = true;
         }
 
-        private static void drawOffset(int positionOffset)
+        /// <inheritdoc cref="DrawTitle(string, string?, string?, ShellTitleDisplayOptions, bool)"/>
+        public void DrawTitle(string title, ShellTitleDisplayOptions displayOptions, bool clear = true) => DrawTitle(title, null, null, displayOptions, clear);
+        /// <inheritdoc cref="DrawTitle(string, string?, string?, ShellTitleDisplayOptions, bool)"/>
+        public void DrawTitle(string title, string? subtitle, ShellTitleDisplayOptions displayOptions, bool clear = true) => DrawTitle(title, subtitle, null, displayOptions, clear);
+
+        /// <summary>
+        /// Draws a fancy title screen, with optionally included 'subtitle' and 'content' text; themed by the given <paramref name="displayOptions"/>
+        /// </summary>
+        /// <param name="title">The title text.</param>
+        /// <param name="subtitle">The subtitle text.</param>
+        /// <param name="content">The content text.</param>
+        /// <param name="displayOptions">The theming options.</param>
+        /// <param name="clear">Clear prior to drawing.</param>
+        public void DrawTitle(string title, string? subtitle, string? content, ShellTitleDisplayOptions displayOptions, bool clear = true)
         {
-            if (positionOffset > 0)
+            if (clear)
+                Console.Clear();
+
+            // Draw title text
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine(ApplyLeftOffset("".PadRight(title.Length + 2, '='), displayOptions.LeftOffset));
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine(" " + ApplyLeftOffset(title, displayOptions.LeftOffset));
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine(ApplyLeftOffset("".PadRight(title.Length + 2, '='), displayOptions.LeftOffset));
+            
+            // Draw title padding
+            Console.Write("".PadRight(displayOptions.TitleVerticalPadding, '\n'));
+            
+            if (subtitle != null)
             {
-                Console.BackgroundColor = ConsoleColor.Black;
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.Write("".PadLeft(positionOffset));
+                // Draw subtitle text
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine(ApplyLeftOffset(subtitle, displayOptions.LeftOffset));
+
+                // Draw subtitle padding
+                Console.Write("".PadRight(displayOptions.SubtitleVerticalPadding, '\n'));
             }
-        }
+            if (content != null)
+            {
+                // Draw content text
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.WriteLine(ApplyLeftOffset(content, displayOptions.LeftOffset));
 
-        public static void DrawTitle(string title, string sub_title, string content, bool clear = false)
-        {
-            if (!_initialized) throw new InvalidOperationException(ERROR_CALL_INIT);
+                // Draw content text padding
+                Console.Write("".PadRight(displayOptions.ContentVerticalPadding, '\n'));
+            }
 
-            if (clear)
-                Console.Clear();
-
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("".PadRight(title.Length + 2, '='));
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine(" " + title);
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("".PadRight(title.Length + 2, '='));
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("\n" + sub_title);
-            Console.ForegroundColor = ConsoleColor.Gray;
-            Console.WriteLine(content);
-
-            Reset();
-        }
-
-        public static void DrawTitle(string title, string sub_title, bool clear = false)
-        {
-            if (!_initialized) throw new InvalidOperationException(ERROR_CALL_INIT);
-
-            if (clear)
-                Console.Clear();
-
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("".PadRight(title.Length + 2, '='));
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine(" " + title);
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("".PadRight(title.Length + 2, '='));
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("\n" + sub_title);
-
-            Reset();
-        }
-
-        public static void DrawTitle(string title, bool clear = false)
-        {
-            if (!_initialized) throw new InvalidOperationException(ERROR_CALL_INIT);
-
-            if (clear)
-                Console.Clear();
-
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("".PadRight(title.Length + 2, '='));
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine(" " + title);
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("".PadRight(title.Length + 2, '='));
-
-            Reset();
+            ResetColours();
         }
 
         /// <summary>
-        /// For when you want the user to be able to enter text again.
+        /// Applies a line terminator aware left offset to the given <paramref name="input"/> string.
         /// </summary>
-        public static void Reset()
+        private static string ApplyLeftOffset(string input, int leftOffset)
+        {
+            // Replace all instances of a newline
+            // with a newline but with padding on the right
+            // also padding the first line manually.
+            return "".PadLeft(leftOffset) + Regex.Replace(input, "(\n|\r|\r\n)", Environment.NewLine + "".PadLeft(leftOffset));
+        }
+
+        /// <summary>
+        /// Draws the left offset padding of whitespace.
+        /// </summary>
+        private static void DrawLeftOffset(int offset)
+        {
+            Console.Write("".PadLeft(offset));
+        }
+
+        /// <summary>
+        /// Returns control back to the user, turns theming off and makes the cursor visible again.
+        /// </summary>
+        public void Reset()
         {
             Console.TreatControlCAsInput = false;
             Console.CursorVisible = true;
 
+            ResetColours();
+        }
+
+        /// <summary>
+        /// Sets the foreground and background colours to their default values.
+        /// </summary>
+        public void ResetColours()
+        {
             Console.BackgroundColor = DefaultBackColor;
             Console.ForegroundColor = DefaultForeColor;
         }
