@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ShellHelper\ShellHelper.csproj" />
+    <ProjectReference Include="..\InteractiveShell\InteractiveShell.csproj" />
   </ItemGroup>
 
 </Project>

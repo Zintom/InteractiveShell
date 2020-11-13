@@ -1,4 +1,4 @@
-﻿using Zintom.ShellHelper;
+﻿using Zintom.InteractiveShell;
 
 namespace DemoProject
 {
