@@ -42,7 +42,7 @@ namespace Zintom.ShellHelper
     /// <summary>
     /// Provides an easy mechanism for displaying interactive menus in the CLI.
     /// </summary>
-    public class ShellMenu
+    public class InteractiveShell
     {
 
         private readonly ConsoleColor DefaultBackColor;
@@ -51,13 +51,13 @@ namespace Zintom.ShellHelper
         private bool _menuDrawnOnce;
 
         /// <summary>
-        /// Creates a new instance of the <see cref="ShellMenu"/> class.
+        /// Creates a new instance of the <see cref="InteractiveShell"/> class.
         /// </summary>
         /// <remarks>
         /// The <see cref="Console.BackgroundColor"/> and <see cref="Console.ForegroundColor"/> are
         /// retained by the object and can be restored at any time with a call to <see cref="ResetColours"/>.
         /// </remarks>
-        public ShellMenu()
+        public InteractiveShell()
         {
             DefaultBackColor = Console.BackgroundColor;
             DefaultForeColor = Console.ForegroundColor;
@@ -189,9 +189,9 @@ namespace Zintom.ShellHelper
         }
 
         /// <inheritdoc cref="DrawTitle(string, string?, string?, ShellTitleDisplayOptions, bool)"/>
-        public void DrawTitle(string title, ShellTitleDisplayOptions displayOptions, bool clear = true) => DrawTitle(title, null, null, displayOptions, clear);
+        public void DrawTitle(string title, ShellTitleDisplayOptions displayOptions, bool clearScreen = true) => DrawTitle(title, null, null, displayOptions, clearScreen);
         /// <inheritdoc cref="DrawTitle(string, string?, string?, ShellTitleDisplayOptions, bool)"/>
-        public void DrawTitle(string title, string? subtitle, ShellTitleDisplayOptions displayOptions, bool clear = true) => DrawTitle(title, subtitle, null, displayOptions, clear);
+        public void DrawTitle(string title, string? subtitle, ShellTitleDisplayOptions displayOptions, bool clearScreen = true) => DrawTitle(title, subtitle, null, displayOptions, clearScreen);
 
         /// <summary>
         /// Draws a fancy title screen, with optionally included 'subtitle' and 'content' text; themed by the given <paramref name="displayOptions"/>
@@ -200,10 +200,10 @@ namespace Zintom.ShellHelper
         /// <param name="subtitle">The subtitle text.</param>
         /// <param name="content">The content text.</param>
         /// <param name="displayOptions">The theming options.</param>
-        /// <param name="clear">Clear prior to drawing.</param>
-        public void DrawTitle(string title, string? subtitle, string? content, ShellTitleDisplayOptions displayOptions, bool clear = true)
+        /// <param name="clearScreen">Clear the screen prior to drawing.</param>
+        public void DrawTitle(string title, string? subtitle, string? content, ShellTitleDisplayOptions displayOptions, bool clearScreen = true)
         {
-            if (clear)
+            if (clearScreen)
                 Console.Clear();
 
             // Draw title text
