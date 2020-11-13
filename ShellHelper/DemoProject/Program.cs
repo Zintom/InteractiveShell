@@ -6,23 +6,32 @@ namespace DemoProject
     {
         static void Main(string[] args)
         {
-            ShellMenu menu = new ShellMenu();
+            // Create a new instance of the ShellMenu class.
+            InteractiveShell menu = new InteractiveShell();
 
+            // Create the options for theming.
             ShellDisplayOptions displayOptions = new ShellDisplayOptions()
             {
-                LeftOffset = 2,
-                DisplayHorizontally = false
+                LeftOffset = 2
             };
-
             ShellTitleDisplayOptions titleDisplayOptions = new ShellTitleDisplayOptions()
             {
                 LeftOffset = 2
             };
 
-            while (true)
+            // Draw the title, clearing the screen beforehand
+            menu.DrawTitle(title: "Sample Menu", subtitle: "Select an option:", displayOptions: titleDisplayOptions, clearScreen: true);
+
+            // Present the user with the interactive menu
+            int result = menu.DisplayMenu(options: new string[] { "Option 1", "Option 2" }, displayOptions: displayOptions);
+            switch (result)
             {
-                menu.DrawTitle("Title", "Line1\nLine2\nLine3", "Content content content", titleDisplayOptions, true);
-                int menuResult = menu.DisplayMenu(new string[] { "Option 1", "Option 2", "Option 3", "Option 4", "Option 5" }, displayOptions);
+                case 0:
+                    // Do Option 1
+                    break;
+                case 1:
+                    // Do Option 2
+                    break;
             }
         }
     }
