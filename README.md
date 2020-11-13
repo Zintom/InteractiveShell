@@ -1,30 +1,37 @@
 # ShellHelper
-A set of methods to make console-based GUI as easy as possible.
-
-## Basics
-Creating a menu is as easy as calling MenuManager.CreateMenu(string[] options, ...).
-You can specify whether you want the menu to display horizontally or vertically, and what space 'offset' you want each menu item to have.
-
-A few helper methods are provided to make displaying menu titles/subtitles easier, DrawTitle(...) being the main method with optional parameters to fit your need.
+Provides an easy mechanism for displaying interactive menus in the CLI.
 
 ### Installation
-#### Option 1
-In Visual Studio goto 'Project > Add Reference > Browse' and select the DLL you've downloaded from this repo.
-#### Option 2
-Compile the .cs file yourself and reference it like in Option 1
+Nuget `PM> Install-Package InteractiveShell`
 
 ## Example
-Here is how a basic menu would work.
+Here's how to setup a basic menu (see [DemoProject](https://github.com/Zintom/ShellHelper/tree/master/ShellHelper/DemoProject) for more)
 ```
-while(true){
-  MenuManager.DrawTitle("Sample Menu", "Select an option:", true);
-  switch(MenuManager.CreateMenu(new string[]{ "Option1", "Option2"}, false, 0){
-    case 0:
-      // Do Option 1
-      break;
-    case 1:
-      // Do Option 2
-      break;
-  }
+// Create a new instance of the ShellMenu class.
+ShellMenu menu = new ShellMenu();
+
+// Create the options for theming.
+ShellDisplayOptions displayOptions = new ShellDisplayOptions()
+{
+  LeftOffset = 2
+};
+ShellTitleDisplayOptions titleDisplayOptions = new ShellTitleDisplayOptions()
+{
+  LeftOffset = 2
+};
+
+// Draw the title, clearing the screen beforehand
+menu.DrawTitle(title: "Sample Menu", subtitle: "Select an option:", displayOptions: titleDisplayOptions, clear: true);
+
+// Present the user with the interactive menu
+int result = menu.DisplayMenu(options: new string[] { "Option 1", "Option 2" }, displayOptions: displayOptions);
+switch(result)
+{
+  case 0:
+    // Do Option 1
+    break;
+  case 1:
+    // Do Option 2
+    break;
 }
 ```
