@@ -1,9 +1,12 @@
 ﻿using System;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Zintom.ShellHelper
 {
+
+    /// <summary>
+    /// Provides theming options for displaying menus etc.
+    /// </summary>
     public class BaseDisplayOptions
     {
         /// <summary>
@@ -12,6 +15,7 @@ namespace Zintom.ShellHelper
         public int LeftOffset { get; set; }
     }
 
+    /// <inheritdoc cref="BaseDisplayOptions"/>
     public class ShellDisplayOptions : BaseDisplayOptions
     {
         /// <summary>
@@ -20,6 +24,7 @@ namespace Zintom.ShellHelper
         public bool DisplayHorizontally { get; set; }
     }
 
+    /// <inheritdoc cref="BaseDisplayOptions"/>
     public class ShellTitleDisplayOptions : BaseDisplayOptions
     {
         /// <summary>
@@ -34,6 +39,9 @@ namespace Zintom.ShellHelper
         public int ContentVerticalPadding { get; set; } = 1;
     }
 
+    /// <summary>
+    /// Provides an easy mechanism for displaying interactive menus in the CLI.
+    /// </summary>
     public class ShellMenu
     {
 
@@ -42,6 +50,13 @@ namespace Zintom.ShellHelper
 
         private bool _menuDrawnOnce;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ShellMenu"/> class.
+        /// </summary>
+        /// <remarks>
+        /// The <see cref="Console.BackgroundColor"/> and <see cref="Console.ForegroundColor"/> are
+        /// retained by the object and can be restored at any time with a call to <see cref="ResetColours"/>.
+        /// </remarks>
         public ShellMenu()
         {
             DefaultBackColor = Console.BackgroundColor;
