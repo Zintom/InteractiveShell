@@ -6,9 +6,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ZintomShellHelper
+namespace Zintom.ShellHelper
 {
-    public static class MenuManager
+    public static class ShellMenu
     {
         private const string ERROR_CALL_INIT = "Please make at least one call to Init() before calling any other methods.";
 
