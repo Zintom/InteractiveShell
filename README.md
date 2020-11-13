@@ -8,7 +8,7 @@ Nuget `PM> Install-Package InteractiveShell`
 Here's how to setup a basic menu (see [DemoProject](https://github.com/Zintom/ShellHelper/tree/master/ShellHelper/DemoProject) for more)
 ```
 // Create a new instance of the ShellMenu class.
-ShellMenu menu = new ShellMenu();
+InteractiveShell menu = new InteractiveShell();
 
 // Create the options for theming.
 ShellDisplayOptions displayOptions = new ShellDisplayOptions()
@@ -21,7 +21,7 @@ ShellTitleDisplayOptions titleDisplayOptions = new ShellTitleDisplayOptions()
 };
 
 // Draw the title, clearing the screen beforehand
-menu.DrawTitle(title: "Sample Menu", subtitle: "Select an option:", displayOptions: titleDisplayOptions, clear: true);
+menu.DrawTitle(title: "Sample Menu", subtitle: "Select an option:", displayOptions: titleDisplayOptions, clearScreen: true);
 
 // Present the user with the interactive menu
 int result = menu.DisplayMenu(options: new string[] { "Option 1", "Option 2" }, displayOptions: displayOptions);
