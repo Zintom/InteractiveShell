@@ -1,5 +1,4 @@
-﻿using System;
-using Zintom.ShellHelper;
+﻿using Zintom.ShellHelper;
 
 namespace DemoProject
 {
@@ -22,8 +21,7 @@ namespace DemoProject
 
             while (true)
             {
-                menu.DrawTitle("Hi!", titleDisplayOptions);
-                menu.DrawTitle("Title", "Hello\nLol\nSubtitle Perferendis laboriosam commodi occaecati ipsam", "Content Magnam ratione aut dolor exercitationem", titleDisplayOptions, false);
+                menu.DrawTitle("Title", "Line1\nLine2\nLine3", "Content content content", titleDisplayOptions, true);
                 int menuResult = menu.DisplayMenu(new string[] { "Option 1", "Option 2", "Option 3", "Option 4", "Option 5" }, displayOptions);
             }
         }
