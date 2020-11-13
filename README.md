@@ -5,10 +5,10 @@ Provides an easy mechanism for displaying interactive menus in the CLI.
 [![License](https://img.shields.io/github/license/Zintom/InteractiveShell)](https://github.com/Zintom/InteractiveShell/blob/master/LICENSE.txt)
 
 ### Installation
-Nuget `PM> Install-Package InteractiveShell`
+NuGet `PM> Install-Package InteractiveShell`
 
 ### Example
-Here's how to setup a basic menu (see [DemoProject](https://github.com/Zintom/ShellHelper/tree/master/ShellHelper/DemoProject) for more)
+Here's how to setup a basic menu (see [DemoProject](https://github.com/Zintom/InteractiveShell/blob/master/ShellHelper/DemoProject/Program.cs) for more)
 ```
 // Create a new instance of the ShellMenu class.
 InteractiveShell menu = new InteractiveShell();
