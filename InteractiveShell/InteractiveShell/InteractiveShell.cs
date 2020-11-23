@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace Zintom.InteractiveShell
@@ -81,104 +82,153 @@ namespace Zintom.InteractiveShell
         /// <returns>The selected item, or if <b>Esc</b> was pressed, will return <see langword="-1"/>.</returns>
         public int DisplayMenu(string[] options, ShellDisplayOptions displayOptions)
         {
+            int[] result = DisplayMultiMenu(options, displayOptions, 1, true);
+
+            if (result.Length == 0) return -1;
+            else return result[0];
+        }
+
+        /// <summary>
+        /// Displays a multiple-choice menu to the user with the given <paramref name="options"/> to select from and
+        /// themed as per the <paramref name="displayOptions"/>.
+        /// <para>
+        /// Select multiple options with <b>Control</b> + <b>Enter</b>.
+        /// </para>
+        /// </summary>
+        /// <param name="options">A list of options that the user can select from.</param>
+        /// <param name="displayOptions">The theming options for the menu.</param>
+        /// <param name="maxSelectableItems">Defines the maximum amount of items the user will be able to multi-select.</param>
+        /// <param name="singleResult">If <see langword="true"/>, removes the multi-select functionality, pressing enter on an option will both select it and return it.</param>
+        /// <remarks>
+        /// <b>Warning:</b> This will take over control of the console keyboard, to return control to the user (allowing them to input text etc), call <see cref="Reset"/>.
+        /// </remarks>
+        /// <returns>The selected items, or if <b>Esc</b> was pressed, will return <see cref="Array.Empty{int}"/>.</returns>
+        public int[] DisplayMultiMenu(string[] options, ShellDisplayOptions displayOptions, int maxSelectableItems = int.MaxValue, bool singleResult = false)
+        {
             _menuDrawnOnce = false;
             Console.CursorVisible = false;
-            int selectedOption = 0;
+            List<int> selectedOptions = new List<int>();
+            int currentOptionPosition = 0;
 
             while (true)
             {
-                DrawMenu(options, selectedOption, displayOptions);
+                DrawMenu(options, selectedOptions, currentOptionPosition, displayOptions);
 
                 ConsoleKeyInfo keyInfo = Console.ReadKey(true);
 
                 if (keyInfo.Key == ConsoleKey.Enter)
                 {
-                    Reset();
-                    return selectedOption;
+                    if (singleResult)
+                    {
+                        //Reset();
+                        return new int[] { currentOptionPosition };
+                    }
+
+                    if (keyInfo.Modifiers.HasFlag(ConsoleModifiers.Control))
+                    {
+                        // If the option is already selected then deselect it.
+                        if (selectedOptions.Contains(currentOptionPosition))
+                        {
+                            selectedOptions.Remove(currentOptionPosition);
+                        }
+                        // If the option is not already selected and
+                        // we are below the max selectable amount of items, then add it.
+                        else if (selectedOptions.Count < maxSelectableItems)
+                        {
+                            selectedOptions.Add(currentOptionPosition);
+                        }
+                    }
+                    else
+                    {
+                        //Reset();
+                        
+                        if (!selectedOptions.Contains(currentOptionPosition))
+                            selectedOptions.Add(currentOptionPosition);
+
+                        // Convert the list to an array and sort it in numerical order.
+                        int[] output = selectedOptions.ToArray();
+                        Array.Sort(output);
+
+                        return output;
+                    }
                 }
                 else if (keyInfo.Key == ConsoleKey.Escape)
                 {
-                    Reset();
-                    return -1;
+                    //Reset();
+                    return Array.Empty<int>();
                 }
                 else if (keyInfo.Key == ConsoleKey.UpArrow || keyInfo.Key == ConsoleKey.LeftArrow)
                 {
-                    if (selectedOption > 0)
-                        selectedOption -= 1;
+                    if (currentOptionPosition > 0)
+                        currentOptionPosition -= 1;
                     else
-                        selectedOption = options.Length - 1;
+                        currentOptionPosition = options.Length - 1;
                 }
                 else if (keyInfo.Key == ConsoleKey.DownArrow || keyInfo.Key == ConsoleKey.RightArrow)
                 {
-                    if (selectedOption < options.Length - 1)
-                        selectedOption += 1;
+                    if (currentOptionPosition < options.Length - 1)
+                        currentOptionPosition += 1;
                     else
-                        selectedOption = 0;
+                        currentOptionPosition = 0;
                 }
             }
         }
 
-        private void DrawMenu(string[] options, int selected, ShellDisplayOptions displayOptions)
+        private void DrawMenu(string[] options, List<int> selectedOptions, int currentPosition, ShellDisplayOptions displayOptions)
         {
-            if (_menuDrawnOnce && !displayOptions.DisplayHorizontally)
-                Console.CursorTop -= options.Length;
-            else if (_menuDrawnOnce && displayOptions.DisplayHorizontally)
-                Console.CursorTop -= 1;
-
-            if (displayOptions.DisplayHorizontally)
+            if (_menuDrawnOnce)
             {
-                if (displayOptions.LeftOffset > 0)
-                {
-                    ResetColours();
-                    DrawLeftOffset(displayOptions.LeftOffset);
-                }
+                if (displayOptions.DisplayHorizontally)
+                    Console.CursorTop -= 1;
+                else
+                    Console.CursorTop -= options.Length;
+            }
 
-                for (int o = 0; o < options.Length; o++)
+            Console.CursorLeft = displayOptions.LeftOffset;
+
+            for (int o = 0; o < options.Length; o++)
+            {
+                if (!displayOptions.DisplayHorizontally)
+                    Console.CursorLeft = displayOptions.LeftOffset;
+
+                if (displayOptions.DisplayHorizontally)
                 {
                     Console.BackgroundColor = ConsoleColor.Black;
                     Console.ForegroundColor = ConsoleColor.DarkGray;
                     Console.Write("<");
+                }
 
-                    if (o == selected)
-                    {
-                        Console.BackgroundColor = ConsoleColor.Gray;
-                        Console.ForegroundColor = ConsoleColor.Black;
-                    }
-                    else
-                    {
-                        Console.BackgroundColor = ConsoleColor.Black;
-                        Console.ForegroundColor = ConsoleColor.White;
-                    }
+                // Set correct display colour for the given option.
+                if (o == currentPosition)
+                {
+                    Console.BackgroundColor = ConsoleColor.White;
+                    Console.ForegroundColor = ConsoleColor.Black;
+                }
+                else if (selectedOptions.Contains(o))
+                {
+                    Console.BackgroundColor = ConsoleColor.Gray;
+                    Console.ForegroundColor = ConsoleColor.Black;
+                }
+                else
+                {
+                    Console.BackgroundColor = ConsoleColor.Black;
+                    Console.ForegroundColor = ConsoleColor.White;
+                }
 
+                if (displayOptions.DisplayHorizontally)
+                {
                     Console.Write(options[o]);
 
                     Console.BackgroundColor = ConsoleColor.Black;
                     Console.ForegroundColor = ConsoleColor.DarkGray;
                     Console.Write("> ");
+
+                    // If we are the last item, then add a newline.
+                    if (o == options.Length - 1)
+                        Console.WriteLine();
                 }
-                Console.WriteLine("");
-            }
-            else
-            {
-                for (int o = 0; o < options.Length; o++)
+                else
                 {
-                    if (displayOptions.LeftOffset > 0)
-                    {
-                        ResetColours();
-                        DrawLeftOffset(displayOptions.LeftOffset);
-                    }
-
-                    if (o == selected)
-                    {
-                        Console.BackgroundColor = ConsoleColor.Gray;
-                        Console.ForegroundColor = ConsoleColor.Black;
-                    }
-                    else
-                    {
-                        Console.BackgroundColor = ConsoleColor.Black;
-                        Console.ForegroundColor = ConsoleColor.White;
-                    }
-
                     Console.WriteLine(options[o]);
                 }
             }
