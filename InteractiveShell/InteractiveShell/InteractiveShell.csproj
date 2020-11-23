@@ -4,7 +4,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>Zintom.InteractiveShell</RootNamespace>
     <Nullable>enable</Nullable>
-    <Version>2.0.2</Version>
+    <Version>2.1</Version>
     <Authors>Tom Zsinko</Authors>
     <Company>Zintom</Company>
     <Description>Provides an easy mechanism for displaying interactive menus in the CLI.</Description>
@@ -14,9 +14,11 @@
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <PackageId>InteractiveShell</PackageId>
     <Product>InteractiveShell</Product>
-    <AssemblyVersion>2.0.2.0</AssemblyVersion>
-    <FileVersion>2.0.2.0</FileVersion>
+    <AssemblyVersion>2.1.0.0</AssemblyVersion>
+    <FileVersion>2.1.0.0</FileVersion>
     <AssemblyName>InteractiveShell</AssemblyName>
+    <PackageReleaseNotes>Added multi-choice menus!
+Bug fixes!</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
