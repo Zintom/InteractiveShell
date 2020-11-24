@@ -301,23 +301,22 @@ namespace Zintom.InteractiveShell
             ResetColours();
         }
 
-        /// <inheritdoc cref="DrawTextWithThemeing(string, ConsoleColor, bool, ShellTitleDisplayOptions?)"/>
-        public void DrawSubtitleText(string subtitle, bool appendNewLine = true, ShellTitleDisplayOptions? displayOptions = null)
-        {
-            DrawTextWithThemeing(subtitle, ConsoleColor.Yellow, appendNewLine, displayOptions);
-        }
-
-        /// <inheritdoc cref="DrawTextWithThemeing(string, ConsoleColor, bool, ShellTitleDisplayOptions?)"/>
-        public void DrawContentText(string content, bool appendNewLine = true, ShellTitleDisplayOptions? displayOptions = null)
-        {
-            DrawTextWithThemeing(content, ConsoleColor.Gray, appendNewLine, displayOptions);
-        }
-
         /// <summary>
         /// Draws fancy text, conforming to the given <paramref name="displayOptions"/> theme,
         /// if the theme passed is null then the <see cref="FallbackTitleDisplayOptions"/> will be used.
         /// </summary>
         /// <param name="appendNewLine">Whether a '<see langword="\n"/>' character should be appended to the end of your given string.</param>
+        public void DrawSubtitleText(string subtitle, bool appendNewLine = true, ShellTitleDisplayOptions? displayOptions = null)
+        {
+            DrawTextWithThemeing(subtitle, ConsoleColor.Yellow, appendNewLine, displayOptions);
+        }
+
+        /// <inheritdoc cref="DrawSubtitleText(string, bool, ShellTitleDisplayOptions?)"/>
+        public void DrawContentText(string content, bool appendNewLine = true, ShellTitleDisplayOptions? displayOptions = null)
+        {
+            DrawTextWithThemeing(content, ConsoleColor.Gray, appendNewLine, displayOptions);
+        }
+
         private void DrawTextWithThemeing(string text, ConsoleColor foreColour, bool appendNewLine = false, ShellTitleDisplayOptions? displayOptions = null)
         {
             if (displayOptions == null)
