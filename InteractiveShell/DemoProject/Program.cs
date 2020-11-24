@@ -21,6 +21,8 @@ namespace DemoProject
                 LeftOffset = 2
             };
 
+            // We will use these fallbacks, notice how we specify `null` for the displayOptions parameters,
+            // these can be omitted as they are optional parameters but have been explicitly set to null to make the intent clearer.
             menu.FallbackDisplayOptions = displayOptions;
             menu.FallbackTitleDisplayOptions = titleDisplayOptions;
 
@@ -53,6 +55,7 @@ namespace DemoProject
             // Present the user with the interactive menu
             int[] results = menu.DisplayMultiMenu(options: new string[] { "Option 1", "Option 2", "Option 3" }, displayOptions: null);
 
+            // Print out the selected indexes
             menu.DrawContentText("\nSelected indexes:", false);
             foreach (var index in results)
             {
