@@ -78,7 +78,7 @@ namespace Zintom.InteractiveShell
         }
 
         /// <inheritdoc cref="DisplayMenu(string[], ShellDisplayOptions)"/>
-        public int DisplayMenu(string option, ShellDisplayOptions? displayOptions)
+        public int DisplayMenu(string option, ShellDisplayOptions? displayOptions = null)
         {
             return DisplayMenu(new string[] { option }, displayOptions);
         }
@@ -93,7 +93,7 @@ namespace Zintom.InteractiveShell
         /// <b>Warning:</b> This will take over control of the console keyboard, to return control to the user (allowing them to input text etc), call <see cref="Reset"/>.
         /// </remarks>
         /// <returns>The selected item, or if <b>Esc</b> was pressed, will return <see langword="-1"/>.</returns>
-        public int DisplayMenu(string[] options, ShellDisplayOptions? displayOptions)
+        public int DisplayMenu(string[] options, ShellDisplayOptions? displayOptions = null)
         {
             int[] result = DisplayMultiMenu(options, displayOptions, 1, true);
 
