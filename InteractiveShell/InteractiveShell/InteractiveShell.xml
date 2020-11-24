@@ -110,17 +110,14 @@
             <param name="clearScreen">Clear the screen prior to drawing.</param>
         </member>
         <member name="M:Zintom.InteractiveShell.InteractiveShell.DrawSubtitleText(System.String,System.Boolean,Zintom.InteractiveShell.ShellTitleDisplayOptions)">
-            <inheritdoc cref="M:Zintom.InteractiveShell.InteractiveShell.DrawTextWithThemeing(System.String,System.ConsoleColor,System.Boolean,Zintom.InteractiveShell.ShellTitleDisplayOptions)"/>
-        </member>
-        <member name="M:Zintom.InteractiveShell.InteractiveShell.DrawContentText(System.String,System.Boolean,Zintom.InteractiveShell.ShellTitleDisplayOptions)">
-            <inheritdoc cref="M:Zintom.InteractiveShell.InteractiveShell.DrawTextWithThemeing(System.String,System.ConsoleColor,System.Boolean,Zintom.InteractiveShell.ShellTitleDisplayOptions)"/>
-        </member>
-        <member name="M:Zintom.InteractiveShell.InteractiveShell.DrawTextWithThemeing(System.String,System.ConsoleColor,System.Boolean,Zintom.InteractiveShell.ShellTitleDisplayOptions)">
             <summary>
             Draws fancy text, conforming to the given <paramref name="displayOptions"/> theme,
             if the theme passed is null then the <see cref="P:Zintom.InteractiveShell.InteractiveShell.FallbackTitleDisplayOptions"/> will be used.
             </summary>
             <param name="appendNewLine">Whether a '<see langword="\n"/>' character should be appended to the end of your given string.</param>
+        </member>
+        <member name="M:Zintom.InteractiveShell.InteractiveShell.DrawContentText(System.String,System.Boolean,Zintom.InteractiveShell.ShellTitleDisplayOptions)">
+            <inheritdoc cref="M:Zintom.InteractiveShell.InteractiveShell.DrawSubtitleText(System.String,System.Boolean,Zintom.InteractiveShell.ShellTitleDisplayOptions)"/>
         </member>
         <member name="M:Zintom.InteractiveShell.InteractiveShell.ApplyLeftOffset(System.String,System.Int32)">
             <summary>
