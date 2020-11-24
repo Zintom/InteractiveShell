@@ -1,7 +1,7 @@
 ## InteractiveShell
 Provides an easy mechanism for displaying interactive menus in the CLI.
 
-[![NuGet](https://img.shields.io/nuget/v/InteractiveShell?color=%2327ae60)](https://www.nuget.org/packages/InteractiveShell/2.0.1)
+[![NuGet](https://img.shields.io/nuget/v/InteractiveShell?color=%2327ae60)](https://www.nuget.org/packages/InteractiveShell)
 [![License](https://img.shields.io/github/license/Zintom/InteractiveShell)](https://github.com/Zintom/InteractiveShell/blob/master/LICENSE.txt)
 
 ### Installation
