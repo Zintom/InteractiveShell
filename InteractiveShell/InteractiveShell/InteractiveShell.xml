@@ -1,0 +1,146 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>InteractiveShell</name>
+    </assembly>
+    <members>
+        <member name="T:Zintom.InteractiveShell.BaseDisplayOptions">
+            <summary>
+            Provides theming options for displaying menus etc.
+            </summary>
+        </member>
+        <member name="P:Zintom.InteractiveShell.BaseDisplayOptions.LeftOffset">
+            <summary>
+            The whitespace padding to add to the left of drawn text.
+            </summary>
+        </member>
+        <member name="T:Zintom.InteractiveShell.ShellDisplayOptions">
+            <inheritdoc cref="T:Zintom.InteractiveShell.BaseDisplayOptions"/>
+        </member>
+        <member name="P:Zintom.InteractiveShell.ShellDisplayOptions.DisplayHorizontally">
+            <summary>
+            Menu should display horizontally rather than the default which is vertical.
+            </summary>
+        </member>
+        <member name="T:Zintom.InteractiveShell.ShellTitleDisplayOptions">
+            <inheritdoc cref="T:Zintom.InteractiveShell.BaseDisplayOptions"/>
+        </member>
+        <member name="P:Zintom.InteractiveShell.ShellTitleDisplayOptions.TitleVerticalPadding">
+            <summary>
+            The newline padding applied underneath the text.
+            </summary>
+        </member>
+        <member name="P:Zintom.InteractiveShell.ShellTitleDisplayOptions.SubtitleVerticalPadding">
+            <inheritdoc cref="P:Zintom.InteractiveShell.ShellTitleDisplayOptions.TitleVerticalPadding"/>
+        </member>
+        <member name="P:Zintom.InteractiveShell.ShellTitleDisplayOptions.ContentVerticalPadding">
+            <inheritdoc cref="P:Zintom.InteractiveShell.ShellTitleDisplayOptions.TitleVerticalPadding"/>
+        </member>
+        <member name="T:Zintom.InteractiveShell.InteractiveShell">
+            <summary>
+            Provides an easy mechanism for displaying interactive menus in the CLI.
+            </summary>
+        </member>
+        <member name="P:Zintom.InteractiveShell.InteractiveShell.FallbackDisplayOptions">
+            <summary>
+            The fallback theme for when a theme is not provided to one of the 'DisplayX' methods.
+            </summary>
+        </member>
+        <member name="P:Zintom.InteractiveShell.InteractiveShell.FallbackTitleDisplayOptions">
+            <summary>
+            The fallback theme for when a theme is not provided to one of the 'DrawX' methods.
+            </summary>
+        </member>
+        <member name="M:Zintom.InteractiveShell.InteractiveShell.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:Zintom.InteractiveShell.InteractiveShell"/> class.
+            </summary>
+            <remarks>
+            The <see cref="P:System.Console.BackgroundColor"/> and <see cref="P:System.Console.ForegroundColor"/> are
+            retained by the object and can be restored at any time with a call to <see cref="M:Zintom.InteractiveShell.InteractiveShell.ResetColours"/>.
+            </remarks>
+        </member>
+        <member name="M:Zintom.InteractiveShell.InteractiveShell.DisplayMenu(System.String,Zintom.InteractiveShell.ShellDisplayOptions)">
+            <inheritdoc cref="M:Zintom.InteractiveShell.InteractiveShell.DisplayMenu(System.String[],Zintom.InteractiveShell.ShellDisplayOptions)"/>
+        </member>
+        <member name="M:Zintom.InteractiveShell.InteractiveShell.DisplayMenu(System.String[],Zintom.InteractiveShell.ShellDisplayOptions)">
+            <summary>
+            Displays a menu to the user with the given choice of <paramref name="options"/> and
+            themed as per the <paramref name="displayOptions"/>.
+            </summary>
+            <param name="options">A list of options that the user can select from.</param>
+            <param name="displayOptions">The theming options for the menu.</param>
+            <remarks>
+            <b>Warning:</b> This will take over control of the console keyboard, to return control to the user (allowing them to input text etc), call <see cref="M:Zintom.InteractiveShell.InteractiveShell.Reset"/>.
+            </remarks>
+            <returns>The selected item, or if <b>Esc</b> was pressed, will return <see langword="-1"/>.</returns>
+        </member>
+        <member name="M:Zintom.InteractiveShell.InteractiveShell.DisplayMultiMenu(System.String[],Zintom.InteractiveShell.ShellDisplayOptions,System.Int32,System.Boolean)">
+            <summary>
+            Displays a multiple-choice menu to the user with the given <paramref name="options"/> to select from and
+            themed as per the <paramref name="displayOptions"/>.
+            <para>
+            Select multiple options with <b>Control</b> + <b>Enter</b>.
+            </para>
+            </summary>
+            <param name="options">A list of options that the user can select from.</param>
+            <param name="displayOptions">The theming options for the menu.</param>
+            <param name="maxSelectableItems">Defines the maximum amount of items the user will be able to multi-select.</param>
+            <param name="singleResult">If <see langword="true"/>, removes the multi-select functionality, pressing enter on an option will both select it and return it.</param>
+            <remarks>
+            <b>Warning:</b> This will take over control of the console keyboard, to return control to the user (allowing them to input text etc), call <see cref="M:Zintom.InteractiveShell.InteractiveShell.Reset"/>.
+            </remarks>
+            <returns>The selected items, or if <b>Esc</b> was pressed, will return <see cref="!:Array.Empty&lt;int&gt;"/>.</returns>
+        </member>
+        <member name="M:Zintom.InteractiveShell.InteractiveShell.DrawTitle(System.String,Zintom.InteractiveShell.ShellTitleDisplayOptions,System.Boolean)">
+            <inheritdoc cref="M:Zintom.InteractiveShell.InteractiveShell.DrawTitle(System.String,System.String,System.String,Zintom.InteractiveShell.ShellTitleDisplayOptions,System.Boolean)"/>
+        </member>
+        <member name="M:Zintom.InteractiveShell.InteractiveShell.DrawTitle(System.String,System.String,Zintom.InteractiveShell.ShellTitleDisplayOptions,System.Boolean)">
+            <inheritdoc cref="M:Zintom.InteractiveShell.InteractiveShell.DrawTitle(System.String,System.String,System.String,Zintom.InteractiveShell.ShellTitleDisplayOptions,System.Boolean)"/>
+        </member>
+        <member name="M:Zintom.InteractiveShell.InteractiveShell.DrawTitle(System.String,System.String,System.String,Zintom.InteractiveShell.ShellTitleDisplayOptions,System.Boolean)">
+            <summary>
+            Draws a fancy title screen, with optionally included <paramref name="subtitle"/> and <paramref name="content"/> text; themed by the given <paramref name="displayOptions"/>,
+            if <paramref name="displayOptions"/> is <see langword="null"/> the <see cref="P:Zintom.InteractiveShell.InteractiveShell.FallbackTitleDisplayOptions"/> is used instead.
+            </summary>
+            <param name="title">The title text.</param>
+            <param name="subtitle">The subtitle text.</param>
+            <param name="content">The content text.</param>
+            <param name="displayOptions">The theming options.</param>
+            <param name="clearScreen">Clear the screen prior to drawing.</param>
+        </member>
+        <member name="M:Zintom.InteractiveShell.InteractiveShell.DrawSubtitleText(System.String,System.Boolean,Zintom.InteractiveShell.ShellTitleDisplayOptions)">
+            <inheritdoc cref="M:Zintom.InteractiveShell.InteractiveShell.DrawTextWithThemeing(System.String,System.ConsoleColor,System.Boolean,Zintom.InteractiveShell.ShellTitleDisplayOptions)"/>
+        </member>
+        <member name="M:Zintom.InteractiveShell.InteractiveShell.DrawContentText(System.String,System.Boolean,Zintom.InteractiveShell.ShellTitleDisplayOptions)">
+            <inheritdoc cref="M:Zintom.InteractiveShell.InteractiveShell.DrawTextWithThemeing(System.String,System.ConsoleColor,System.Boolean,Zintom.InteractiveShell.ShellTitleDisplayOptions)"/>
+        </member>
+        <member name="M:Zintom.InteractiveShell.InteractiveShell.DrawTextWithThemeing(System.String,System.ConsoleColor,System.Boolean,Zintom.InteractiveShell.ShellTitleDisplayOptions)">
+            <summary>
+            Draws fancy text, conforming to the given <paramref name="displayOptions"/> theme,
+            if the theme passed is null then the <see cref="P:Zintom.InteractiveShell.InteractiveShell.FallbackTitleDisplayOptions"/> will be used.
+            </summary>
+            <param name="appendNewLine">Whether a '<see langword="\n"/>' character should be appended to the end of your given string.</param>
+        </member>
+        <member name="M:Zintom.InteractiveShell.InteractiveShell.ApplyLeftOffset(System.String,System.Int32)">
+            <summary>
+            Applies a line terminator aware left offset to the given <paramref name="input"/> string.
+            </summary>
+        </member>
+        <member name="M:Zintom.InteractiveShell.InteractiveShell.DrawLeftOffset(System.Int32)">
+            <summary>
+            Draws the left offset padding of whitespace.
+            </summary>
+        </member>
+        <member name="M:Zintom.InteractiveShell.InteractiveShell.Reset">
+            <summary>
+            Returns control back to the user, turns theming off and makes the cursor visible again.
+            </summary>
+        </member>
+        <member name="M:Zintom.InteractiveShell.InteractiveShell.ResetColours">
+            <summary>
+            Sets the foreground and background colours to their default values.
+            </summary>
+        </member>
+    </members>
+</doc>
