@@ -52,6 +52,16 @@ namespace Zintom.InteractiveShell
         private bool _menuDrawnOnce;
 
         /// <summary>
+        /// The fallback theme for when a theme is not provided to one of the 'DisplayX' methods.
+        /// </summary>
+        public ShellDisplayOptions FallbackDisplayOptions { get; set; }
+
+        /// <summary>
+        /// The fallback theme for when a theme is not provided to one of the 'DrawX' methods.
+        /// </summary>
+        public ShellTitleDisplayOptions FallbackTitleDisplayOptions { get; set; }
+
+        /// <summary>
         /// Creates a new instance of the <see cref="InteractiveShell"/> class.
         /// </summary>
         /// <remarks>
@@ -62,10 +72,13 @@ namespace Zintom.InteractiveShell
         {
             DefaultBackColor = Console.BackgroundColor;
             DefaultForeColor = Console.ForegroundColor;
+
+            FallbackDisplayOptions = new ShellDisplayOptions();
+            FallbackTitleDisplayOptions = new ShellTitleDisplayOptions();
         }
 
         /// <inheritdoc cref="DisplayMenu(string[], ShellDisplayOptions)"/>
-        public int DisplayMenu(string option, ShellDisplayOptions displayOptions)
+        public int DisplayMenu(string option, ShellDisplayOptions? displayOptions)
         {
             return DisplayMenu(new string[] { option }, displayOptions);
         }
@@ -80,7 +93,7 @@ namespace Zintom.InteractiveShell
         /// <b>Warning:</b> This will take over control of the console keyboard, to return control to the user (allowing them to input text etc), call <see cref="Reset"/>.
         /// </remarks>
         /// <returns>The selected item, or if <b>Esc</b> was pressed, will return <see langword="-1"/>.</returns>
-        public int DisplayMenu(string[] options, ShellDisplayOptions displayOptions)
+        public int DisplayMenu(string[] options, ShellDisplayOptions? displayOptions)
         {
             int[] result = DisplayMultiMenu(options, displayOptions, 1, true);
 
@@ -103,7 +116,7 @@ namespace Zintom.InteractiveShell
         /// <b>Warning:</b> This will take over control of the console keyboard, to return control to the user (allowing them to input text etc), call <see cref="Reset"/>.
         /// </remarks>
         /// <returns>The selected items, or if <b>Esc</b> was pressed, will return <see cref="Array.Empty{int}"/>.</returns>
-        public int[] DisplayMultiMenu(string[] options, ShellDisplayOptions displayOptions, int maxSelectableItems = int.MaxValue, bool singleResult = false)
+        public int[] DisplayMultiMenu(string[] options, ShellDisplayOptions? displayOptions = null, int maxSelectableItems = int.MaxValue, bool singleResult = false)
         {
             _menuDrawnOnce = false;
             Console.CursorVisible = false;
@@ -174,8 +187,11 @@ namespace Zintom.InteractiveShell
             }
         }
 
-        private void DrawMenu(string[] options, List<int> selectedOptions, int currentPosition, ShellDisplayOptions displayOptions)
+        private void DrawMenu(string[] options, List<int> selectedOptions, int currentPosition, ShellDisplayOptions? displayOptions)
         {
+            if (displayOptions == null)
+                displayOptions = FallbackDisplayOptions;
+
             if (_menuDrawnOnce)
             {
                 if (displayOptions.DisplayHorizontally)
@@ -239,53 +255,82 @@ namespace Zintom.InteractiveShell
         }
 
         /// <inheritdoc cref="DrawTitle(string, string?, string?, ShellTitleDisplayOptions, bool)"/>
-        public void DrawTitle(string title, ShellTitleDisplayOptions displayOptions, bool clearScreen = true) => DrawTitle(title, null, null, displayOptions, clearScreen);
+        public void DrawTitle(string title, ShellTitleDisplayOptions? displayOptions = null, bool clearScreen = true) => DrawTitle(title, null, null, displayOptions, clearScreen);
         /// <inheritdoc cref="DrawTitle(string, string?, string?, ShellTitleDisplayOptions, bool)"/>
-        public void DrawTitle(string title, string? subtitle, ShellTitleDisplayOptions displayOptions, bool clearScreen = true) => DrawTitle(title, subtitle, null, displayOptions, clearScreen);
+        public void DrawTitle(string title, string? subtitle, ShellTitleDisplayOptions? displayOptions = null, bool clearScreen = true) => DrawTitle(title, subtitle, null, displayOptions, clearScreen);
 
         /// <summary>
-        /// Draws a fancy title screen, with optionally included 'subtitle' and 'content' text; themed by the given <paramref name="displayOptions"/>
+        /// Draws a fancy title screen, with optionally included <paramref name="subtitle"/> and <paramref name="content"/> text; themed by the given <paramref name="displayOptions"/>,
+        /// if <paramref name="displayOptions"/> is <see langword="null"/> the <see cref="FallbackTitleDisplayOptions"/> is used instead.
         /// </summary>
         /// <param name="title">The title text.</param>
         /// <param name="subtitle">The subtitle text.</param>
         /// <param name="content">The content text.</param>
         /// <param name="displayOptions">The theming options.</param>
         /// <param name="clearScreen">Clear the screen prior to drawing.</param>
-        public void DrawTitle(string title, string? subtitle, string? content, ShellTitleDisplayOptions displayOptions, bool clearScreen = true)
+        public void DrawTitle(string title, string? subtitle, string? content, ShellTitleDisplayOptions? displayOptions = null, bool clearScreen = true)
         {
             if (clearScreen)
                 Console.Clear();
 
+            if (displayOptions == null)
+                displayOptions = FallbackTitleDisplayOptions;
+
             // Draw title text
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine(ApplyLeftOffset("".PadRight(title.Length + 2, '='), displayOptions.LeftOffset));
+
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine(" " + ApplyLeftOffset(title, displayOptions.LeftOffset));
+
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine(ApplyLeftOffset("".PadRight(title.Length + 2, '='), displayOptions.LeftOffset));
-            
+
             // Draw title padding
             Console.Write("".PadRight(displayOptions.TitleVerticalPadding, '\n'));
-            
+
             if (subtitle != null)
             {
-                // Draw subtitle text
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine(ApplyLeftOffset(subtitle, displayOptions.LeftOffset));
-
-                // Draw subtitle padding
-                Console.Write("".PadRight(displayOptions.SubtitleVerticalPadding, '\n'));
+                DrawSubtitleText(subtitle, true, displayOptions);
             }
             if (content != null)
             {
-                // Draw content text
-                Console.ForegroundColor = ConsoleColor.Gray;
-                Console.WriteLine(ApplyLeftOffset(content, displayOptions.LeftOffset));
-
-                // Draw content text padding
-                Console.Write("".PadRight(displayOptions.ContentVerticalPadding, '\n'));
+                DrawContentText(content, true, displayOptions);
             }
 
+            ResetColours();
+        }
+
+        /// <inheritdoc cref="DrawTextWithThemeing(string, ConsoleColor, bool, ShellTitleDisplayOptions?)"/>
+        public void DrawSubtitleText(string subtitle, bool appendNewLine = true, ShellTitleDisplayOptions? displayOptions = null)
+        {
+            DrawTextWithThemeing(subtitle, ConsoleColor.Yellow, appendNewLine, displayOptions);
+        }
+
+        /// <inheritdoc cref="DrawTextWithThemeing(string, ConsoleColor, bool, ShellTitleDisplayOptions?)"/>
+        public void DrawContentText(string content, bool appendNewLine = true, ShellTitleDisplayOptions? displayOptions = null)
+        {
+            DrawTextWithThemeing(content, ConsoleColor.Gray, appendNewLine, displayOptions);
+        }
+
+        /// <summary>
+        /// Draws fancy text, conforming to the given <paramref name="displayOptions"/> theme,
+        /// if the theme passed is null then the <see cref="FallbackTitleDisplayOptions"/> will be used.
+        /// </summary>
+        /// <param name="appendNewLine">Whether a '<see langword="\n"/>' character should be appended to the end of your given string.</param>
+        private void DrawTextWithThemeing(string text, ConsoleColor foreColour, bool appendNewLine = false, ShellTitleDisplayOptions? displayOptions = null)
+        {
+            if (displayOptions == null)
+                displayOptions = FallbackTitleDisplayOptions;
+
+            // Draw text
+            Console.ForegroundColor = foreColour;
+            Console.Write(ApplyLeftOffset(text, displayOptions.LeftOffset) + (appendNewLine ? "\n" : ""));
+
+            // Draw text vertical padding
+            Console.Write("".PadRight(displayOptions.ContentVerticalPadding, '\n'));
+
+            // Reset the console colours back to what they were.
             ResetColours();
         }
 
@@ -303,6 +348,7 @@ namespace Zintom.InteractiveShell
         /// <summary>
         /// Draws the left offset padding of whitespace.
         /// </summary>
+        [Obsolete("Use `ApplyLeftOffset` to apply a left offset.")]
         private static void DrawLeftOffset(int offset)
         {
             Console.Write("".PadLeft(offset));
