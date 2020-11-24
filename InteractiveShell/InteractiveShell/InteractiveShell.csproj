@@ -4,7 +4,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>Zintom.InteractiveShell</RootNamespace>
     <Nullable>enable</Nullable>
-    <Version>2.2.0</Version>
+    <Version>2.2.2</Version>
     <Authors>Tom Zsinko</Authors>
     <Company>Zintom</Company>
     <Description>Provides an easy mechanism for displaying interactive menus in the CLI.</Description>
@@ -14,12 +14,18 @@
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <PackageId>InteractiveShell</PackageId>
     <Product>InteractiveShell</Product>
-    <AssemblyVersion>2.2.0.0</AssemblyVersion>
-    <FileVersion>2.2.0.0</FileVersion>
+    <AssemblyVersion>2.2.2.0</AssemblyVersion>
+    <FileVersion>2.2.2.0</FileVersion>
     <AssemblyName>InteractiveShell</AssemblyName>
-    <PackageReleaseNotes>Added fallback themes so that you don't have to specify a theme for every invocation of the Draw or Display methods.
+    <PackageReleaseNotes>Added XML documentation.
+
+Added fallback themes so that you don't have to specify a theme for every invocation of the Draw or Display methods.
 
 Exposed DrawSubtitle and DrawContent methods so that you can draw text which complies with your given theme easily.</PackageReleaseNotes>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>C:\Users\Tom\Documents\GitHub\InteractiveShell\InteractiveShell\InteractiveShell\InteractiveShell.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
