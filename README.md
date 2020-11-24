@@ -8,7 +8,7 @@ Provides an easy mechanism for displaying interactive menus in the CLI.
 NuGet `PM> Install-Package InteractiveShell`
 
 ### Example
-Here's how to setup a basic menu (see [DemoProject](https://github.com/Zintom/InteractiveShell/blob/master/ShellHelper/DemoProject/Program.cs) for more)
+Here's how to setup a basic menu (see [DemoProject](https://github.com/Zintom/InteractiveShell/tree/master/InteractiveShell/DemoProject/Program.cs) for more)
 ```
 // Create a new instance of the ShellMenu class.
 InteractiveShell menu = new InteractiveShell();
