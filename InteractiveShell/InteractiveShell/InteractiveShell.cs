@@ -119,16 +119,16 @@ namespace Zintom.InteractiveShell
             FallbackTitleDisplayOptions = new ShellTitleDisplayOptions();
         }
 
-        /// <inheritdoc cref="DisplayMenu(string[], string?, ShellDisplayOptions?)"/>
+        /// <inheritdoc cref="DisplayMenu(string[], string?[], ShellDisplayOptions?, int)"/>
         public int DisplayMenu(string option, ShellDisplayOptions? displayOptions = null)
         {
             return DisplayMenu(new string[] { option }, displayOptions);
         }
 
-        /// <inheritdoc cref="DisplayMenu(string[], string?, ShellDisplayOptions?)"/>
-        public int DisplayMenu(string[] options, ShellDisplayOptions? displayOptions = null)
+        /// <inheritdoc cref="DisplayMenu(string[], string?[], ShellDisplayOptions?, int)"/>
+        public int DisplayMenu(string[] options, ShellDisplayOptions? displayOptions = null, int preSelectedOption = 0)
         {
-            return DisplayMenu(options, null, displayOptions);
+            return DisplayMenu(options, null, displayOptions, preSelectedOption);
         }
 
         /// <summary>
@@ -136,24 +136,25 @@ namespace Zintom.InteractiveShell
         /// themed as per the <paramref name="displayOptions"/>.
         /// </summary>
         /// <param name="options">A list of options that the user can select from.</param>
-        /// <param name="footerText">The footer displayed below the options.</param>
+        /// <param name="footerTexts">The footer displayed below each menu option.</param>
         /// <param name="displayOptions">The theming options for the menu.</param>
+        /// <param name="preSelectedOption">The option that will be pre-selected when the menu is displayed, default is 0.</param>
         /// <remarks>
         /// <b>Warning:</b> This will take over control of the console keyboard, to return control to the user (allowing them to input text etc), call <see cref="Reset"/>.
         /// </remarks>
         /// <returns>The selected item, or if <b>Esc</b> was pressed, will return <see langword="-1"/>.</returns>
-        public int DisplayMenu(string[] options, string? footerText, ShellDisplayOptions? displayOptions = null)
+        public int DisplayMenu(string[] options, string[]? footerTexts, ShellDisplayOptions? displayOptions = null, int preSelectedOption = 0)
         {
-            int[] result = DisplayMultiMenu(options, footerText, displayOptions, 1, true);
+            int[] result = DisplayMultiMenu(options, footerTexts, displayOptions, 1, true, preSelectedOption);
 
             if (result.Length == 0) return -1;
             else return result[0];
         }
 
-        /// <inheritdoc cref="DisplayMultiMenu(string[], string?, ShellDisplayOptions?, int, bool)"/>
-        public int[] DisplayMultiMenu(string[] options, ShellDisplayOptions? displayOptions = null, int maxSelectableItems = int.MaxValue, bool singleResult = false)
+        /// <inheritdoc cref="DisplayMultiMenu(string[], string?[], ShellDisplayOptions?, int, bool, int)"/>
+        public int[] DisplayMultiMenu(string[] options, ShellDisplayOptions? displayOptions = null, int maxSelectableItems = int.MaxValue, bool singleResult = false, int preSelectedOption = 0)
         {
-            return DisplayMultiMenu(options, null, displayOptions, maxSelectableItems, singleResult);
+            return DisplayMultiMenu(options, null, displayOptions, maxSelectableItems, singleResult, preSelectedOption);
         }
 
         /// <summary>
@@ -164,19 +165,23 @@ namespace Zintom.InteractiveShell
         /// </para>
         /// </summary>
         /// <param name="options">A list of options that the user can select from.</param>
-        /// <param name="footerText">The footer displayed below the options.</param>
+        /// <param name="footerTexts">The footer displayed below each menu option, 1 footer for each menu option or 1 single footer for the entire menu.</param>
         /// <param name="displayOptions">The theming options for the menu.</param>
         /// <param name="maxSelectableItems">Defines the maximum amount of items the user will be able to multi-select.</param>
         /// <param name="singleResult">If <see langword="true"/>, removes the multi-select functionality, pressing enter on an option will both select it and return it.</param>
+        /// <param name="preSelectedOption">The option that will be pre-selected when the menu is displayed, default is 0.</param>
         /// <remarks>
         /// <b>Warning:</b> This will take over control of the console keyboard, to return control to the user (allowing them to input text etc), call <see cref="Reset"/>.
         /// </remarks>
-        /// <returns>The selected items, or if <b>Esc</b> was pressed, will return <see cref="Array.Empty{int}"/>.</returns>
-        public int[] DisplayMultiMenu(string[] options, string? footerText, ShellDisplayOptions? displayOptions = null, int maxSelectableItems = int.MaxValue, bool singleResult = false)
+        /// <returns>The selected items, or if <b>Esc</b> was pressed, will return <see cref="Array.Empty{T}"/>.</returns>
+        public int[] DisplayMultiMenu(string[] options, string[]? footerTexts, ShellDisplayOptions? displayOptions = null, int maxSelectableItems = int.MaxValue, bool singleResult = false, int preSelectedOption = 0)
         {
+            if (preSelectedOption >= options.Length)
+                throw new ArgumentException("The pre-selected option cannot be greater than the amount of options (duh).");
+
             Console.CursorVisible = false;
             List<int> selectedOptions = new List<int>();
-            int currentOptionPosition = 0;
+            int currentOptionPosition = preSelectedOption;
 
             // Log the vertical position of the cursor
             // so that DrawMenu knows where to begin drawing.
@@ -184,7 +189,7 @@ namespace Zintom.InteractiveShell
 
             while (true)
             {
-                DrawMenu(options, selectedOptions, currentOptionPosition, footerText, displayOptions);
+                DrawMenu(options, selectedOptions, currentOptionPosition, footerTexts, displayOptions);
 
                 ConsoleKeyInfo keyInfo = Console.ReadKey(true);
 
@@ -242,10 +247,15 @@ namespace Zintom.InteractiveShell
             }
         }
 
-        private void DrawMenu(string[] options, List<int> selectedOptions, int currentPosition, string? footerText, ShellDisplayOptions? displayOptions)
+        private void DrawMenu(string[] options, List<int> selectedOptions, int currentPosition, string[]? footerTexts, ShellDisplayOptions? displayOptions)
         {
             if (displayOptions == null)
                 displayOptions = FallbackDisplayOptions;
+
+            if (footerTexts != null 
+                && footerTexts.Length > 1
+                && options.Length != footerTexts.Length)
+                throw new ArgumentException("Not enough/Too many footer texts provided. If multiple footer texts are specified, each option should have a footer.");
 
             // Reset the cursor to the top drawing position.
             Console.SetCursorPosition(displayOptions.LeftOffset, _cursorBeginDrawYPosition);
@@ -298,15 +308,16 @@ namespace Zintom.InteractiveShell
             }
 
             // Draw footer
-            if (!string.IsNullOrEmpty(footerText))
+            if (footerTexts != null)
             {
                 ResetColours();
                 Console.ForegroundColor = displayOptions.FooterForegroundColour;
 
-                footerText = ApplyLeftOffset(footerText, displayOptions.LeftOffset);
+                string text = footerTexts.Length == 1 ? footerTexts[0] : footerTexts[currentPosition];
+                text = ApplyLeftOffset(text, displayOptions.LeftOffset);
 
                 Console.Write("".PadRight(displayOptions.FooterVerticalPadding, '\n'));
-                Console.WriteLine(footerText);
+                Console.WriteLine(text);
             }
 
             ResetColours();
