@@ -103,28 +103,29 @@
             </remarks>
         </member>
         <member name="M:Zintom.InteractiveShell.InteractiveShell.DisplayMenu(System.String,Zintom.InteractiveShell.ShellDisplayOptions)">
-            <inheritdoc cref="M:Zintom.InteractiveShell.InteractiveShell.DisplayMenu(System.String[],System.String,Zintom.InteractiveShell.ShellDisplayOptions)"/>
+            <inheritdoc cref="M:Zintom.InteractiveShell.InteractiveShell.DisplayMenu(System.String[],System.String[],Zintom.InteractiveShell.ShellDisplayOptions,System.Int32)"/>
         </member>
-        <member name="M:Zintom.InteractiveShell.InteractiveShell.DisplayMenu(System.String[],Zintom.InteractiveShell.ShellDisplayOptions)">
-            <inheritdoc cref="M:Zintom.InteractiveShell.InteractiveShell.DisplayMenu(System.String[],System.String,Zintom.InteractiveShell.ShellDisplayOptions)"/>
+        <member name="M:Zintom.InteractiveShell.InteractiveShell.DisplayMenu(System.String[],Zintom.InteractiveShell.ShellDisplayOptions,System.Int32)">
+            <inheritdoc cref="M:Zintom.InteractiveShell.InteractiveShell.DisplayMenu(System.String[],System.String[],Zintom.InteractiveShell.ShellDisplayOptions,System.Int32)"/>
         </member>
-        <member name="M:Zintom.InteractiveShell.InteractiveShell.DisplayMenu(System.String[],System.String,Zintom.InteractiveShell.ShellDisplayOptions)">
+        <member name="M:Zintom.InteractiveShell.InteractiveShell.DisplayMenu(System.String[],System.String[],Zintom.InteractiveShell.ShellDisplayOptions,System.Int32)">
             <summary>
             Displays a menu to the user with the given choice of <paramref name="options"/> and
             themed as per the <paramref name="displayOptions"/>.
             </summary>
             <param name="options">A list of options that the user can select from.</param>
-            <param name="footerText">The footer displayed below the options.</param>
+            <param name="footerTexts">The footer displayed below each menu option.</param>
             <param name="displayOptions">The theming options for the menu.</param>
+            <param name="preSelectedOption">The option that will be pre-selected when the menu is displayed, default is 0.</param>
             <remarks>
             <b>Warning:</b> This will take over control of the console keyboard, to return control to the user (allowing them to input text etc), call <see cref="M:Zintom.InteractiveShell.InteractiveShell.Reset"/>.
             </remarks>
             <returns>The selected item, or if <b>Esc</b> was pressed, will return <see langword="-1"/>.</returns>
         </member>
-        <member name="M:Zintom.InteractiveShell.InteractiveShell.DisplayMultiMenu(System.String[],Zintom.InteractiveShell.ShellDisplayOptions,System.Int32,System.Boolean)">
-            <inheritdoc cref="M:Zintom.InteractiveShell.InteractiveShell.DisplayMultiMenu(System.String[],System.String,Zintom.InteractiveShell.ShellDisplayOptions,System.Int32,System.Boolean)"/>
+        <member name="M:Zintom.InteractiveShell.InteractiveShell.DisplayMultiMenu(System.String[],Zintom.InteractiveShell.ShellDisplayOptions,System.Int32,System.Boolean,System.Int32)">
+            <inheritdoc cref="M:Zintom.InteractiveShell.InteractiveShell.DisplayMultiMenu(System.String[],System.String[],Zintom.InteractiveShell.ShellDisplayOptions,System.Int32,System.Boolean,System.Int32)"/>
         </member>
-        <member name="M:Zintom.InteractiveShell.InteractiveShell.DisplayMultiMenu(System.String[],System.String,Zintom.InteractiveShell.ShellDisplayOptions,System.Int32,System.Boolean)">
+        <member name="M:Zintom.InteractiveShell.InteractiveShell.DisplayMultiMenu(System.String[],System.String[],Zintom.InteractiveShell.ShellDisplayOptions,System.Int32,System.Boolean,System.Int32)">
             <summary>
             Displays a multiple-choice menu to the user with the given <paramref name="options"/> to select from and
             themed as per the <paramref name="displayOptions"/>.
@@ -133,14 +134,15 @@
             </para>
             </summary>
             <param name="options">A list of options that the user can select from.</param>
-            <param name="footerText">The footer displayed below the options.</param>
+            <param name="footerTexts">The footer displayed below each menu option, 1 footer for each menu option or 1 single footer for the entire menu.</param>
             <param name="displayOptions">The theming options for the menu.</param>
             <param name="maxSelectableItems">Defines the maximum amount of items the user will be able to multi-select.</param>
             <param name="singleResult">If <see langword="true"/>, removes the multi-select functionality, pressing enter on an option will both select it and return it.</param>
+            <param name="preSelectedOption">The option that will be pre-selected when the menu is displayed, default is 0.</param>
             <remarks>
             <b>Warning:</b> This will take over control of the console keyboard, to return control to the user (allowing them to input text etc), call <see cref="M:Zintom.InteractiveShell.InteractiveShell.Reset"/>.
             </remarks>
-            <returns>The selected items, or if <b>Esc</b> was pressed, will return <see cref="!:Array.Empty&lt;int&gt;"/>.</returns>
+            <returns>The selected items, or if <b>Esc</b> was pressed, will return <see cref="M:System.Array.Empty``1"/>.</returns>
         </member>
         <member name="M:Zintom.InteractiveShell.InteractiveShell.DrawTitle(System.String,Zintom.InteractiveShell.ShellTitleDisplayOptions,System.Boolean)">
             <inheritdoc cref="M:Zintom.InteractiveShell.InteractiveShell.DrawTitle(System.String,System.String,System.String,Zintom.InteractiveShell.ShellTitleDisplayOptions,System.Boolean)"/>
