@@ -34,7 +34,7 @@ namespace DemoProject
             menu.DrawTitle(title: "Sample Menu", subtitle: "Select a single option:", "Content test", displayOptions: null, clearScreen: true);
 
             // Present the user with the interactive menu
-            int result = menu.DisplayMenu(options: new string[] { "Option 1", "Option 2" }, footerText: "Menu footer text.", displayOptions: null);
+            int result = menu.DisplayMenu(options: new string[] { "Option 1", "Option 2" }, footerTexts: null, displayOptions: null);
             switch (result)
             {
                 case 0:
@@ -53,7 +53,8 @@ namespace DemoProject
             menu.DrawTitle(title: "Sample Menu", subtitle: "Select multiple options with Control + Enter:", displayOptions: null, clearScreen: true);
 
             // Present the user with the interactive menu
-            int[] results = menu.DisplayMultiMenu(options: new string[] { "Option 1", "Option 2", "Option 3" }, footerText: "Menu footer text.", displayOptions: null);
+            int[] results = menu.DisplayMultiMenu(options: new string[] { "Option 1", "Option 2", "Option 3" }, 
+                                              footerTexts: new string[] { "Footer 1", "Footer 2", "Footer 3" }, displayOptions: null);
 
             // Print out the selected indexes
             menu.DrawContentText("\nSelected indexes:", false);
