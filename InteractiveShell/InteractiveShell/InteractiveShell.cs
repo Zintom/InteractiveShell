@@ -23,6 +23,48 @@ namespace Zintom.InteractiveShell
         /// Menu should display horizontally rather than the default which is vertical.
         /// </summary>
         public bool DisplayHorizontally { get; set; }
+
+        /// <summary>
+        /// The newline padding above the footer text.
+        /// </summary>
+        public int FooterVerticalPadding { get; set; } = 1;
+
+        /// <summary>
+        /// The colour of the footer text displayed below an options menu.
+        /// </summary>
+        public ConsoleColor FooterForegroundColour { get; set; } = ConsoleColor.Gray;
+
+        /// <summary>
+        /// Gets or sets the foreground colour of the focused item.
+        /// </summary>
+        /// <remarks>A focused item is the item which the user currently has highlighted.</remarks>
+        public ConsoleColor FocusedItemForegroundColour { get; set; } = ConsoleColor.Black;
+
+        /// <summary>
+        /// Gets or sets the background colour of the focused item.
+        /// </summary>
+        /// <remarks>A focused item is the item which the user currently has highlighted.</remarks>
+        public ConsoleColor FocusedItemBackgroundColour { get; set; } = ConsoleColor.White;
+
+        /// <summary>
+        /// Gets or sets the foreground colour of selected items.
+        /// </summary>
+        public ConsoleColor SelectedItemForegroundColour { get; set; } = ConsoleColor.Black;
+
+        /// <summary>
+        /// Gets or sets the background colour of selected items.
+        /// </summary>
+        public ConsoleColor SelectedItemBackgroundColour { get; set; } = ConsoleColor.Gray;
+
+        /// <summary>
+        /// Gets or sets the foreground colour of unselected items.
+        /// </summary>
+        public ConsoleColor UnSelectedItemForegroundColour { get; set; } = ConsoleColor.White;
+
+        /// <summary>
+        /// Gets or sets the background colour of unselected items.
+        /// </summary>
+        public ConsoleColor UnSelectedItemBackgroundColour { get; set; } = ConsoleColor.Black;
     }
 
     /// <inheritdoc cref="BaseDisplayOptions"/>
@@ -49,7 +91,7 @@ namespace Zintom.InteractiveShell
         private readonly ConsoleColor DefaultBackColor;
         private readonly ConsoleColor DefaultForeColor;
 
-        private bool _menuDrawnOnce;
+        private int _cursorBeginDrawYPosition;
 
         /// <summary>
         /// The fallback theme for when a theme is not provided to one of the 'DisplayX' methods.
@@ -77,10 +119,16 @@ namespace Zintom.InteractiveShell
             FallbackTitleDisplayOptions = new ShellTitleDisplayOptions();
         }
 
-        /// <inheritdoc cref="DisplayMenu(string[], ShellDisplayOptions)"/>
+        /// <inheritdoc cref="DisplayMenu(string[], string?, ShellDisplayOptions?)"/>
         public int DisplayMenu(string option, ShellDisplayOptions? displayOptions = null)
         {
             return DisplayMenu(new string[] { option }, displayOptions);
+        }
+
+        /// <inheritdoc cref="DisplayMenu(string[], string?, ShellDisplayOptions?)"/>
+        public int DisplayMenu(string[] options, ShellDisplayOptions? displayOptions = null)
+        {
+            return DisplayMenu(options, null, displayOptions);
         }
 
         /// <summary>
@@ -88,17 +136,24 @@ namespace Zintom.InteractiveShell
         /// themed as per the <paramref name="displayOptions"/>.
         /// </summary>
         /// <param name="options">A list of options that the user can select from.</param>
+        /// <param name="footerText">The footer displayed below the options.</param>
         /// <param name="displayOptions">The theming options for the menu.</param>
         /// <remarks>
         /// <b>Warning:</b> This will take over control of the console keyboard, to return control to the user (allowing them to input text etc), call <see cref="Reset"/>.
         /// </remarks>
         /// <returns>The selected item, or if <b>Esc</b> was pressed, will return <see langword="-1"/>.</returns>
-        public int DisplayMenu(string[] options, ShellDisplayOptions? displayOptions = null)
+        public int DisplayMenu(string[] options, string? footerText, ShellDisplayOptions? displayOptions = null)
         {
-            int[] result = DisplayMultiMenu(options, displayOptions, 1, true);
+            int[] result = DisplayMultiMenu(options, footerText, displayOptions, 1, true);
 
             if (result.Length == 0) return -1;
             else return result[0];
+        }
+
+        /// <inheritdoc cref="DisplayMultiMenu(string[], string?, ShellDisplayOptions?, int, bool)"/>
+        public int[] DisplayMultiMenu(string[] options, ShellDisplayOptions? displayOptions = null, int maxSelectableItems = int.MaxValue, bool singleResult = false)
+        {
+            return DisplayMultiMenu(options, null, displayOptions, maxSelectableItems, singleResult);
         }
 
         /// <summary>
@@ -109,6 +164,7 @@ namespace Zintom.InteractiveShell
         /// </para>
         /// </summary>
         /// <param name="options">A list of options that the user can select from.</param>
+        /// <param name="footerText">The footer displayed below the options.</param>
         /// <param name="displayOptions">The theming options for the menu.</param>
         /// <param name="maxSelectableItems">Defines the maximum amount of items the user will be able to multi-select.</param>
         /// <param name="singleResult">If <see langword="true"/>, removes the multi-select functionality, pressing enter on an option will both select it and return it.</param>
@@ -116,16 +172,19 @@ namespace Zintom.InteractiveShell
         /// <b>Warning:</b> This will take over control of the console keyboard, to return control to the user (allowing them to input text etc), call <see cref="Reset"/>.
         /// </remarks>
         /// <returns>The selected items, or if <b>Esc</b> was pressed, will return <see cref="Array.Empty{int}"/>.</returns>
-        public int[] DisplayMultiMenu(string[] options, ShellDisplayOptions? displayOptions = null, int maxSelectableItems = int.MaxValue, bool singleResult = false)
+        public int[] DisplayMultiMenu(string[] options, string? footerText, ShellDisplayOptions? displayOptions = null, int maxSelectableItems = int.MaxValue, bool singleResult = false)
         {
-            _menuDrawnOnce = false;
             Console.CursorVisible = false;
             List<int> selectedOptions = new List<int>();
             int currentOptionPosition = 0;
 
+            // Log the vertical position of the cursor
+            // so that DrawMenu knows where to begin drawing.
+            _cursorBeginDrawYPosition = Console.CursorTop;
+
             while (true)
             {
-                DrawMenu(options, selectedOptions, currentOptionPosition, displayOptions);
+                DrawMenu(options, selectedOptions, currentOptionPosition, footerText, displayOptions);
 
                 ConsoleKeyInfo keyInfo = Console.ReadKey(true);
 
@@ -133,7 +192,6 @@ namespace Zintom.InteractiveShell
                 {
                     if (singleResult)
                     {
-                        //Reset();
                         return new int[] { currentOptionPosition };
                     }
 
@@ -152,9 +210,7 @@ namespace Zintom.InteractiveShell
                         }
                     }
                     else
-                    {
-                        //Reset();
-                        
+                    {                        
                         if (!selectedOptions.Contains(currentOptionPosition))
                             selectedOptions.Add(currentOptionPosition);
 
@@ -167,7 +223,6 @@ namespace Zintom.InteractiveShell
                 }
                 else if (keyInfo.Key == ConsoleKey.Escape)
                 {
-                    //Reset();
                     return Array.Empty<int>();
                 }
                 else if (keyInfo.Key == ConsoleKey.UpArrow || keyInfo.Key == ConsoleKey.LeftArrow)
@@ -187,20 +242,13 @@ namespace Zintom.InteractiveShell
             }
         }
 
-        private void DrawMenu(string[] options, List<int> selectedOptions, int currentPosition, ShellDisplayOptions? displayOptions)
+        private void DrawMenu(string[] options, List<int> selectedOptions, int currentPosition, string? footerText, ShellDisplayOptions? displayOptions)
         {
             if (displayOptions == null)
                 displayOptions = FallbackDisplayOptions;
 
-            if (_menuDrawnOnce)
-            {
-                if (displayOptions.DisplayHorizontally)
-                    Console.CursorTop -= 1;
-                else
-                    Console.CursorTop -= options.Length;
-            }
-
-            Console.CursorLeft = displayOptions.LeftOffset;
+            // Reset the cursor to the top drawing position.
+            Console.SetCursorPosition(displayOptions.LeftOffset, _cursorBeginDrawYPosition);
 
             for (int o = 0; o < options.Length; o++)
             {
@@ -217,18 +265,18 @@ namespace Zintom.InteractiveShell
                 // Set correct display colour for the given option.
                 if (o == currentPosition)
                 {
-                    Console.BackgroundColor = ConsoleColor.White;
-                    Console.ForegroundColor = ConsoleColor.Black;
+                    Console.BackgroundColor = displayOptions.FocusedItemBackgroundColour;
+                    Console.ForegroundColor = displayOptions.FocusedItemForegroundColour;
                 }
                 else if (selectedOptions.Contains(o))
                 {
-                    Console.BackgroundColor = ConsoleColor.Gray;
-                    Console.ForegroundColor = ConsoleColor.Black;
+                    Console.BackgroundColor = displayOptions.SelectedItemBackgroundColour;
+                    Console.ForegroundColor = displayOptions.SelectedItemForegroundColour;
                 }
                 else
                 {
-                    Console.BackgroundColor = ConsoleColor.Black;
-                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.BackgroundColor = displayOptions.UnSelectedItemBackgroundColour;
+                    Console.ForegroundColor = displayOptions.UnSelectedItemForegroundColour;
                 }
 
                 if (displayOptions.DisplayHorizontally)
@@ -249,9 +297,19 @@ namespace Zintom.InteractiveShell
                 }
             }
 
-            ResetColours();
+            // Draw footer
+            if (!string.IsNullOrEmpty(footerText))
+            {
+                ResetColours();
+                Console.ForegroundColor = displayOptions.FooterForegroundColour;
 
-            _menuDrawnOnce = true;
+                footerText = ApplyLeftOffset(footerText, displayOptions.LeftOffset);
+
+                Console.Write("".PadRight(displayOptions.FooterVerticalPadding, '\n'));
+                Console.WriteLine(footerText);
+            }
+
+            ResetColours();
         }
 
         /// <inheritdoc cref="DrawTitle(string, string?, string?, ShellTitleDisplayOptions, bool)"/>
