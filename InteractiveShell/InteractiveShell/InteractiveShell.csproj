@@ -18,6 +18,7 @@
     <FileVersion>2.2.5.0</FileVersion>
     <AssemblyName>InteractiveShell</AssemblyName>
     <PackageReleaseNotes>A custom footer can now be provided for each menu item.</PackageReleaseNotes>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
