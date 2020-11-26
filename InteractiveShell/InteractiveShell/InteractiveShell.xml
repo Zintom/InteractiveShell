@@ -22,6 +22,48 @@
             Menu should display horizontally rather than the default which is vertical.
             </summary>
         </member>
+        <member name="P:Zintom.InteractiveShell.ShellDisplayOptions.FooterVerticalPadding">
+            <summary>
+            The newline padding above the footer text.
+            </summary>
+        </member>
+        <member name="P:Zintom.InteractiveShell.ShellDisplayOptions.FooterForegroundColour">
+            <summary>
+            The colour of the footer text displayed below an options menu.
+            </summary>
+        </member>
+        <member name="P:Zintom.InteractiveShell.ShellDisplayOptions.FocusedItemForegroundColour">
+            <summary>
+            Gets or sets the foreground colour of the focused item.
+            </summary>
+            <remarks>A focused item is the item which the user currently has highlighted.</remarks>
+        </member>
+        <member name="P:Zintom.InteractiveShell.ShellDisplayOptions.FocusedItemBackgroundColour">
+            <summary>
+            Gets or sets the background colour of the focused item.
+            </summary>
+            <remarks>A focused item is the item which the user currently has highlighted.</remarks>
+        </member>
+        <member name="P:Zintom.InteractiveShell.ShellDisplayOptions.SelectedItemForegroundColour">
+            <summary>
+            Gets or sets the foreground colour of selected items.
+            </summary>
+        </member>
+        <member name="P:Zintom.InteractiveShell.ShellDisplayOptions.SelectedItemBackgroundColour">
+            <summary>
+            Gets or sets the background colour of selected items.
+            </summary>
+        </member>
+        <member name="P:Zintom.InteractiveShell.ShellDisplayOptions.UnSelectedItemForegroundColour">
+            <summary>
+            Gets or sets the foreground colour of unselected items.
+            </summary>
+        </member>
+        <member name="P:Zintom.InteractiveShell.ShellDisplayOptions.UnSelectedItemBackgroundColour">
+            <summary>
+            Gets or sets the background colour of unselected items.
+            </summary>
+        </member>
         <member name="T:Zintom.InteractiveShell.ShellTitleDisplayOptions">
             <inheritdoc cref="T:Zintom.InteractiveShell.BaseDisplayOptions"/>
         </member>
@@ -61,14 +103,18 @@
             </remarks>
         </member>
         <member name="M:Zintom.InteractiveShell.InteractiveShell.DisplayMenu(System.String,Zintom.InteractiveShell.ShellDisplayOptions)">
-            <inheritdoc cref="M:Zintom.InteractiveShell.InteractiveShell.DisplayMenu(System.String[],Zintom.InteractiveShell.ShellDisplayOptions)"/>
+            <inheritdoc cref="M:Zintom.InteractiveShell.InteractiveShell.DisplayMenu(System.String[],System.String,Zintom.InteractiveShell.ShellDisplayOptions)"/>
         </member>
         <member name="M:Zintom.InteractiveShell.InteractiveShell.DisplayMenu(System.String[],Zintom.InteractiveShell.ShellDisplayOptions)">
+            <inheritdoc cref="M:Zintom.InteractiveShell.InteractiveShell.DisplayMenu(System.String[],System.String,Zintom.InteractiveShell.ShellDisplayOptions)"/>
+        </member>
+        <member name="M:Zintom.InteractiveShell.InteractiveShell.DisplayMenu(System.String[],System.String,Zintom.InteractiveShell.ShellDisplayOptions)">
             <summary>
             Displays a menu to the user with the given choice of <paramref name="options"/> and
             themed as per the <paramref name="displayOptions"/>.
             </summary>
             <param name="options">A list of options that the user can select from.</param>
+            <param name="footerText">The footer displayed below the options.</param>
             <param name="displayOptions">The theming options for the menu.</param>
             <remarks>
             <b>Warning:</b> This will take over control of the console keyboard, to return control to the user (allowing them to input text etc), call <see cref="M:Zintom.InteractiveShell.InteractiveShell.Reset"/>.
@@ -76,6 +122,9 @@
             <returns>The selected item, or if <b>Esc</b> was pressed, will return <see langword="-1"/>.</returns>
         </member>
         <member name="M:Zintom.InteractiveShell.InteractiveShell.DisplayMultiMenu(System.String[],Zintom.InteractiveShell.ShellDisplayOptions,System.Int32,System.Boolean)">
+            <inheritdoc cref="M:Zintom.InteractiveShell.InteractiveShell.DisplayMultiMenu(System.String[],System.String,Zintom.InteractiveShell.ShellDisplayOptions,System.Int32,System.Boolean)"/>
+        </member>
+        <member name="M:Zintom.InteractiveShell.InteractiveShell.DisplayMultiMenu(System.String[],System.String,Zintom.InteractiveShell.ShellDisplayOptions,System.Int32,System.Boolean)">
             <summary>
             Displays a multiple-choice menu to the user with the given <paramref name="options"/> to select from and
             themed as per the <paramref name="displayOptions"/>.
@@ -84,6 +133,7 @@
             </para>
             </summary>
             <param name="options">A list of options that the user can select from.</param>
+            <param name="footerText">The footer displayed below the options.</param>
             <param name="displayOptions">The theming options for the menu.</param>
             <param name="maxSelectableItems">Defines the maximum amount of items the user will be able to multi-select.</param>
             <param name="singleResult">If <see langword="true"/>, removes the multi-select functionality, pressing enter on an option will both select it and return it.</param>
